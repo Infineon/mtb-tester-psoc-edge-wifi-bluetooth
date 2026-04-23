@@ -128,7 +128,18 @@ SECTIONS
         *(.rodata .rodata.* .constdata .constdata.* .conststring .conststring.*)
         /* Exclude certain files from this section as they will be placed in RAM */
         *(EXCLUDE_FILE(*cy_syslib.* *cy_syslib_ext.* *cy_smif.* *cy_smif_memnum.* *cy_smif_memslot.* *cy_smif_sfdp.* *cy_smif_hb_flash.* *mtb_hal_memoryspi.* *mtb_serial_memory.* *freertos/Source*.* *cy_clib_support*.* *cy_mutex_pool*.* *cy_time.* *cyabs_*.* *cy_worker_thread.* *cmsis*.*
-        *cy_secure_sockets.* *WHD/COMPONENT_WIFI6/src/*.* *lwip-network-interface-integration/source/*.* *source/iperf_utility/*.* *source/iperf/*.* *cy_sd_host.* *mtb_hal_sdhc.* *lwip/src*.* *whd-bsp-integration/*.* *freertos/Source/*.* *clib-support/*.* *abstraction-rtos/*.* *cmsis/*.* *lwip-freertos-integration/*.*) .text*)
+        *cy_secure_sockets.* *WHD/COMPONENT_WIFI6/src/*.* *lwip-network-interface-integration/source/*.* *source/iperf_utility/*.* *source/iperf/*.* *cy_sd_host.* *mtb_hal_sdhc.* *lwip/src*.* *whd-bsp-integration/*.* *freertos/Source/*.* *clib-support/*.* *abstraction-rtos/*.* *cmsis/*.* *lwip-freertos-integration/*.*
+
+        *libc_a-malloc.o
+        *libc_a-freer.o
+        *libc_a-mallocr.o
+        *libc_a-atoi.o
+        *libc_a-calloc.o
+        *libc_a-callocr.o
+        *_arm_addsubdf3.*
+        *_arm_muldivdf3.*  
+        
+        ) .text*)
 
         . = ALIGN(4);
 
@@ -216,7 +227,15 @@ SECTIONS
         *cy_time.*(.text*)
         *cyabs_*.*(.text*)
         *cy_worker_thread.*(.text*)
-        *cmsis*.*(.text*)
+        *cmsis*.*(.text*)        
+        *libc_a-malloc.o(.text*)
+        *libc_a-freer.o(.text*)
+        *libc_a-mallocr.o(.text*)
+        *libc_a-atoi.o(.text*)
+        *libc_a-calloc.o(.text*)
+        *libc_a-callocr.o(.text*)
+        *_arm_addsubdf3.*(.text*)
+        *_arm_muldivdf3.*(.text*)
 
         . = ALIGN(4);
     } > m55_code_INTERNAL AT > m55_nvm_sel
@@ -320,6 +339,12 @@ SECTIONS
         . = ALIGN(4);
 
         __bss_end__ = .;
+    } > m55_data_INTERNAL
+
+    .cy_pbuf_pool_section(NOLOAD) : ALIGN(4)
+    {
+        KEEP(*(.cy_pbuf_pool_section))
+        . = ALIGN(4);
     } > m55_data_INTERNAL
 
     __StackTop = ORIGIN(m55_data_INTERNAL) + LENGTH(m55_data_INTERNAL);

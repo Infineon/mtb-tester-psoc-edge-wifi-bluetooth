@@ -227,6 +227,45 @@ CLib Support                    |
 Abstraction RTOS                |
 CMSIS                           |
 
+### Throughput Measurements
+
+The following table shows the Wi-Fi throughput measurements for the PSOC Edge E84 EVK device connected to an Asus-AX3000 router, using the CM55 CPU at 400MHz, in a closed environment (RF box), and the sdio clock set to 100MHz.
+- AP RSSI : -4 to -8 Db
+- No WiFi interference. 
+
+#### GCC_ARM Toolchain: 
+| AP Band | TCP Tx (Mbps) | TCP Rx (Mbps) | UDP Tx (Mbps) | UDP Rx (Mbps) |
+|---------|---------------|---------------|---------------|---------------|
+| 2G      | 57.6          | 69            | 117           |     90        |
+| 5G      | 58.2          | 72            | 121           |     100       |
+
+#### ARM Toolchain:
+| AP Band | TCP Tx (Mbps) | TCP Rx (Mbps) | UDP Tx (Mbps) | UDP Rx (Mbps) |
+|---------|---------------|---------------|---------------|---------------|
+| 2G      |      74       |      68.8     |       117     |       90      |
+| 5G      |      75.7     |      71       |       121     |      100      |
+
+#### LLVM_ARM Toolchain:
+| AP Band | TCP Tx (Mbps) | TCP Rx (Mbps) | UDP Tx (Mbps) | UDP Rx (Mbps) |
+|---------|---------------|---------------|---------------|---------------|
+| 2G      |     75.1      |      68.5     |      118      |       90      |
+| 5G      |     76.5      |      70.4     |      122      |       100     |
+
+
+Note: For IAR Toolchain - Currently does not support moving of high frequency code (lwip/whd) to SocMeM, only RX-buffers are moved to DTCM. For other toolchains both of these optimisations are enabled.
+
+### Commands used: 
+PC IP addr : 192.168.50.144
+DUT IP addr : 192.168.50.71
+
+| Scenario | Device (Explorer) | PC |
+|----------|------------------|-----|
+| **TCP Tx** | `iperf -c 192.168.50.144 -p 50007 -t 1200` | `iperf -s -p 50007 -i 2` |
+| **TCP Rx** | `iperf -s` | `iperf -c 192.168.50.71 -t 1200 -i 2` |
+| **UDP Tx** | `iperf -u -c 192.168.50.144 -p 50007 -b 120M -t 1200` | `iperf -s -u -p 50007 -i 2` |
+| **UDP Rx** | `iperf -s -u -t 1200` | `iperf -c 192.168.50.71 -u -t 1200 -i 2 -b 100M` |
+
+### Custom Linker Scripts
 The template linker scripts are placed in *templates\TARGET_KIT_PSE84_EVAL_EPC2\COMPONENT_CM33\TOOLCHAIN_GCC_ARM* and *templates\TARGET_KIT_PSE84_EVAL_EPC2\COMPONENT_CM55\TOOLCHAIN_GCC_ARM*. Please note that template linker scripts are currently available **only for the GCC_ARM toolchain**.
 
 ## Debugging
@@ -286,6 +325,7 @@ Document title: Wi-Fi Bluetooth® tester
 
 | Version | Description of change |
 | ------- | --------------------- |
+| 1.1.0   | Improved throughput  |
 | 1.0.0   | This is the first version of the application. |
 ------
 

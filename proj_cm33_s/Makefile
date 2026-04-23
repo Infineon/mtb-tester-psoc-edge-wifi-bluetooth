@@ -140,10 +140,4 @@ CY_GETLIBS_SHARED_PATH=../..
 #
 CY_GETLIBS_SHARED_NAME=mtb_shared
 
-# Absolute path to the compiler's "bin" directory.
-#
-# The default depends on the selected TOOLCHAIN (GCC_ARM uses the ModusToolbox
-# IDE provided compiler by default).
-CY_COMPILER_PATH?=
-
 include $(CY_TOOLS_DIR)/make/start.mk

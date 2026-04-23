@@ -47,6 +47,10 @@
 #include "cybsp.h"
 
 /*****************************************************************************
+* Macros
+******************************************************************************/
+#define CM33_NS_APP_BOOT_ADDR      (CYMEM_CM33_0_m33_nvm_START + CYBSP_MCUBOOT_HEADER_SIZE) 
+/*****************************************************************************
 * Function Name: main
 ******************************************************************************
 * This is the main function for Cortex M33 CPU secure application
@@ -84,10 +88,10 @@ int main(void)
     /* Enable global interrupts */
     __enable_irq();
 
-    ns_stack = (uint32_t)(*((uint32_t*)CY_CORTEX_M33_NS_APPL_ADDR));
+    ns_stack = (uint32_t)(*((uint32_t*)CM33_NS_APP_BOOT_ADDR));
     __TZ_set_MSP_NS(ns_stack);
     
-    NonSecure_ResetHandler = (cy_cmse_funcptr)(*((uint32_t*)(CY_CORTEX_M33_NS_APPL_ADDR + 4)));
+    NonSecure_ResetHandler = (cy_cmse_funcptr)(*((uint32_t*)(CM33_NS_APP_BOOT_ADDR + 4)));
 
     /* Start non-secure application */
     NonSecure_ResetHandler();
