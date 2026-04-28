@@ -241,13 +241,8 @@ SECTIONS
         KEEP(*(.cy_socmem_code))
         *cy_secure_sockets.*(.text*)
         *WHD/COMPONENT_WIFI6/src/*.*(.text*)
-        *lwip-network-interface-integration/source/*.*(.text*)
-        *source/iperf_utility/*.*(.text*)
-        *source/iperf/*.*(.text*)
         *cy_sd_host.*(.text*)
         *mtb_hal_sdhc.*(.text*)
-        *lwip/src*.*(.text*)
-        *whd-bsp-integration/*.*(.text*)
         *freertos/Source/*.*(.text*)
         *clib-support/*.*(.text*)
         *abstraction-rtos/*.*(.text*)
@@ -412,6 +407,20 @@ SECTIONS
     .cy_socmem_data : ALIGN(4)
     {
         KEEP(*(.cy_socmem_data))
+
+        /* In debug config, app_code_socmem overflows. Increasing app_code_socmem
+        would require maintaining a custom design.modus, so instead these files are
+        moved here to cy_socmem_data which has available space in debug config. */
+
+        /* For other toolchains app_code_socmem does not overflow in debug config,
+        so moving these files here is not strictly required, but does not cause
+        any issues either. */
+
+        *lwip/src*.*(.text*)
+        *whd-bsp-integration/*.*(.text*)
+        *lwip-network-interface-integration/source/*.*(.text*)
+        *source/iperf_utility/*.*(.text*)
+        *source/iperf/*.*(.text*)
 
         . = ALIGN(4);
     }  > m55_data_secondary AT > m55_nvm_sel

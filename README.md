@@ -325,6 +325,7 @@ Document title: Wi-Fi Bluetooth® tester
 
 | Version | Description of change |
 | ------- | --------------------- |
+| 1.1.1   | Fix for LLVM build errors  |
 | 1.1.0   | Improved throughput  |
 | 1.0.0   | This is the first version of the application. |
 ------
