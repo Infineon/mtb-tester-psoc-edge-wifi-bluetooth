@@ -53,7 +53,7 @@ VERBOSE=
 # ... then code in directories named COMPONENT_foo and COMPONENT_bar will be
 # added to the build
 #
-COMPONENTS+=FREERTOS MBEDTLS LWIP SECURE_SOCKETS WICED_BLE WCM
+COMPONENTS+=FREERTOS MBEDTLS LWIP SECURE_SOCKETS WICED_BLE WCM RTOS_AWARE
 
 # Like COMPONENTS, but disable optional code that was enabled by default.
 DISABLE_COMPONENTS=
@@ -72,13 +72,19 @@ SOURCES+=
 INCLUDES+=
 
 # Custom configuration of mbedtls library.
-MBEDTLSFLAGS = MBEDTLS_USER_CONFIG_FILE='"mbedtls_user_config.h"'
+MBEDTLSFLAGS = MBEDTLS_USER_CONFIG_FILE='"configs/mbedtls_user_config.h"'
 # Default configuration of mbedtls library.
 DEFINES+=MBEDTLS_CONFIG_FILE='"mbedtls/mbedtls_config.h"'
 # PSA configuration of mbedtls library.
 DEFINES+=MBEDTLS_PSA_CRYPTO_CONFIG_FILE='"configs/ifx_psa_crypto_config.h"' 
 # Add additional defines to the build process (without a leading -D).
 DEFINES+=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF CY_RTOS_AWARE HAVE_SNPRINTF CY_RX_PBUF_IN_DTCM
+
+# Allocated for 2 TLS connections. Update if required.
+DEFINES+=CYCFG_MBEDTLS_BUFFER_SIZE=2*64*1024
+
+# Increase console thread stack for TLS 1.3 handshake (default 6KB is too small for mbedtls RSA)
+DEFINES+=CONSOLE_THREAD_STACK_SIZE=(12*1024)
 
 # Select softfp or hardfp floating point. Default is softfp.
 VFP_SELECT+=hardfp

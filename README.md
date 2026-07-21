@@ -203,6 +203,75 @@ For a list of supported IDEs and more details, see the "Exporting to IDEs" secti
 
    - See [Running  Bluetooth® LE commands against a remote peer device](https://github.com/Infineon/command-console#ble-commands).
 
+10. Run WebSocket commands to test WebSocket client and server functionality.
+
+    See the [WebSocket utility commands](#websocket-utility-commands) section below for the full command reference.
+
+## WebSocket utility commands
+
+The application includes a WebSocket utility that provides commands for testing WebSocket client and server functionality over both unsecured (`ws`) and secured (`wss`) connections. All commands use the `ws` base command with `-c` (client) or `-s` (server) mode flags.
+
+### Configuring certificates for secure WebSocket (WSS)
+
+For secure WebSocket connections (`wss`), you must update the TLS certificates and keys in *proj_cm55/configs/websocket_certificates.h* before building the application. The following macros need to be configured:
+
+| Macro | Description |
+|-------|-------------|
+| `WS_ROOT_CA_CERTIFICATE` | PEM-encoded Root CA certificate used to verify the server |
+| `WS_CLIENT_PRIVATE_KEY` | PEM-encoded client private key |
+| `WS_CLIENT_CERTIFICATE` | PEM-encoded client certificate |
+| `WS_SERVER_CERTIFICATE` | PEM-encoded server certificate (for server mode) |
+| `WS_SERVER_PRIVATE_KEY` | PEM-encoded server private key (for server mode) |
+
+Replace the default placeholder certificates with your own certificates and keys. Each PEM string must be formatted as a C macro with `\n` line endings.
+
+**Note:** The default certificates in the file are samples only and **must not** be used in production. Generate your own CA, server, and client certificates using tools such as OpenSSL.
+
+### WebSocket client commands
+
+| Command | Description |
+|---------|-------------|
+| `ws -c connect <host> -p <port>` | Connect to a WebSocket server (unsecured) |
+| `ws -c connect <host> -p <port> tls` | Connect to a WebSocket server (secured/WSS) |
+| `ws -c send -t text -m "<message>"` | Send a text message |
+| `ws -c send -t binary -m "<hex_data>"` | Send binary data (hex-encoded) |
+| `ws -c send -t ping` | Send a ping frame |
+| `ws -c send -t ping -m "<payload>"` | Send a ping frame with payload |
+| `ws -c disconnect` | Disconnect from the server |
+
+**Examples:**
+
+```
+ws -c connect 192.168.1.100 -p 8080
+ws -c connect example.com -p 443 tls
+ws -c send -t text -m "Hello World"
+ws -c send -t binary -m "48656c6c6f"
+ws -c send -t ping
+ws -c disconnect
+```
+
+### WebSocket server commands
+
+| Command | Description |
+|---------|-------------|
+| `ws -s start -p <port>` | Start a WebSocket server (unsecured) |
+| `ws -s start -p <port> tls` | Start a WebSocket server (secured/WSS) |
+| `ws -s send -cid <client_id> -t text -m "<message>"` | Send a text message to a connected client |
+| `ws -s send -cid <client_id> -t binary -m "<hex_data>"` | Send binary data to a connected client |
+| `ws -s stop` | Stop the WebSocket server |
+
+**Examples:**
+
+```
+ws -s start -p 50007
+ws -s start -p 50007 tls
+ws -s send -cid 0 -t text -m "Hello Client"
+ws -s send -cid 1 -t binary -m "DEADBEEF"
+ws -s stop
+```
+
+**Note:** The `client_id` is a zero-based index assigned to each client in the order they connect to the server.
+
 ## Wi-Fi Throughput and Linker Script
 
 With the default BSP linker script the entire code executes from external flash, which leads to reduced throughput. For optimal performance, data path critical assets should be relocated to **SoC memory (socmem)**, and the tester application achieves this by having a custom **CM55** template linker script that configures these assets to execute from SoCMEM.
@@ -325,6 +394,7 @@ Document title: Wi-Fi Bluetooth® tester
 
 | Version | Description of change |
 | ------- | --------------------- |
+| 1.2.0   | WebSocket Utility added  |
 | 1.1.1   | Fix for LLVM build errors  |
 | 1.1.0   | Improved throughput  |
 | 1.0.0   | This is the first version of the application. |

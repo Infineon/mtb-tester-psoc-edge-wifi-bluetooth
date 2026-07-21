@@ -53,6 +53,7 @@
 #include "command_console.h"
 #include "iperf_utility.h"
 #include "wifi_utility.h"
+#include "websocket_utility.h"
 #include "cy_wcm.h"
 #if (defined COMPONENT_WICED_BLE)
 #include "bt_utility.h"
@@ -325,7 +326,7 @@ cy_rslt_t command_console_add_command(void) {
         printf ("Error in initializing command console library : %ld \n", (long)result);
         goto error;
     }
-
+#ifndef DISABLE_COMMAND_CONSOLE_WIFI
     /* Initialize Wi-Fi utility and add Wi-Fi commands */
     result = wifi_utility_init();
     if ( result != CY_RSLT_SUCCESS )
@@ -333,13 +334,23 @@ cy_rslt_t command_console_add_command(void) {
         printf ("Error in initializing command console library : %ld \n", (long)result);
         goto error;
     }
+#endif
 
+#ifndef DISABLE_COMMAND_CONSOLE_IPERF
     /* Initialize IPERF utility and add IPERF commands */
     iperf_utility_init(&wcm_config.interface);
+#endif
 
+#ifndef DISABLE_COMMAND_CONSOLE_BT
 #if (defined COMPONENT_WICED_BLE)
     /* Initialize Bluetooth utility and add BT commands */
     bt_utility_init();
+#endif
+#endif
+
+#ifndef DISABLE_COMMAND_CONSOLE_WEBSOCKET
+    /* Initialize WebSocket utility and add WebSocket commands */
+    websocket_utility_init();
 #endif
 
     return CY_RSLT_SUCCESS;
@@ -414,6 +425,10 @@ int main(void)
     {
         CY_ASSERT(0);
     }
+
+    /* Initialize CLIB support for thread-safe malloc/free */
+    static mtb_hal_rtc_t rtc_obj;
+    mtb_clib_support_init(&rtc_obj);
 
     /* Enable global interrupts */
     __enable_irq();
