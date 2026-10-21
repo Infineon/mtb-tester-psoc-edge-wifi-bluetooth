@@ -18,7 +18,7 @@ See the command console library [Readme.md](https://github.com/Infineon/command-
 - GNU Arm&reg; Embedded Compiler v14.2.1 (`GCC_ARM`) - Default value of `TOOLCHAIN`
 - Arm&reg; Compiler v6.22 (`ARM`)
 - IAR C/C++ Compiler v9.50.2 (`IAR`)
-- LLVM Embedded Toolchain for Arm&reg; v19.1.5 (`LLVM_ARM`)
+- LLVM Embedded Toolchain for Arm&reg; v22.1.0 (`LLVM_ARM`)
 
 ## Supported kits (make variable 'TARGET')
 
@@ -394,6 +394,7 @@ Document title: Wi-Fi Bluetooth® tester
 
 | Version | Description of change |
 | ------- | --------------------- |
+| 1.3.0   | Added support for MbedTLS v4.2 |
 | 1.2.0   | WebSocket Utility added  |
 | 1.1.1   | Fix for LLVM build errors  |
 | 1.1.0   | Improved throughput  |

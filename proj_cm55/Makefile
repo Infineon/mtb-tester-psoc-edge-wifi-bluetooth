@@ -73,12 +73,32 @@ INCLUDES+=
 
 # Custom configuration of mbedtls library.
 MBEDTLSFLAGS = MBEDTLS_USER_CONFIG_FILE='"configs/mbedtls_user_config.h"'
+
+# Add additional defines to the build process (without a leading -D).
+DEFINES+=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF CY_RTOS_AWARE HAVE_SNPRINTF CY_RX_PBUF_IN_DTCM
+
 # Default configuration of mbedtls library.
 DEFINES+=MBEDTLS_CONFIG_FILE='"mbedtls/mbedtls_config.h"'
 # PSA configuration of mbedtls library.
-DEFINES+=MBEDTLS_PSA_CRYPTO_CONFIG_FILE='"configs/ifx_psa_crypto_config.h"' 
-# Add additional defines to the build process (without a leading -D).
-DEFINES+=$(MBEDTLSFLAGS) CYBSP_WIFI_CAPABLE CY_RETARGET_IO_CONVERT_LF_TO_CRLF CY_RTOS_AWARE HAVE_SNPRINTF CY_RX_PBUF_IN_DTCM
+DEFINES+=TF_PSA_CRYPTO_CONFIG_FILE='"configs/tf_psa_crypto_config.h"'
+DEFINES+=TF_PSA_CRYPTO_USER_CONFIG_FILE='"configs/tf_psa_crypto_user_config.h"'
+
+# Enable ifx-tf-psa-crypto compatible headers in cy-mbedtls-acceleration
+DEFINES+=IFX_TF_PSA IFX_TF_PSA_CRYPTO
+
+WOLFSSL_ROOT=../../mtb_shared/ifx-wolfcrypto/release-v5.9.11
+WOLFSSL_PLATFORM_DIR=pse8x  #Change according to platform 
+DEFINES+=WOLFSSL_USER_SETTINGS
+INCLUDES += $(WOLFSSL_ROOT)
+INCLUDES += $(WOLFSSL_ROOT)/wolfssl
+INCLUDES += $(WOLFSSL_ROOT)/wolfssl/wolfcrypt/port/infineon/$(WOLFSSL_PLATFORM_DIR)
+
+# IAR rejects C99 variable-length arrays (VLAs) by default (Pe060), which are
+# used in the cy-mbedtls-acceleration_psa XMSS sources (e.g. src/pqc/xmss/hash.c).
+# GCC and ARM clang accept VLAs; enable --vla for IAR to match their behavior.
+ifeq ($(TOOLCHAIN),IAR)
+	CFLAGS += --vla
+endif 
 
 # Allocated for 2 TLS connections. Update if required.
 DEFINES+=CYCFG_MBEDTLS_BUFFER_SIZE=2*64*1024
